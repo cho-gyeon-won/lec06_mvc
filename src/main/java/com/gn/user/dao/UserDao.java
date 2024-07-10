@@ -11,7 +11,7 @@ public class UserDao {
 		PreparedStatement pstmt = null;
 		int result = 0;
 		try {
-			String sql = "INSERT INTO user (user_id, user_pw, user_name) VALUES (?, ?, ?)";
+			String sql = "INSERT INTO `user` (user_id, user_pw, user_name) VALUES (?, ?, ?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, u.getUser_id());
 			pstmt.setString(2, u.getUser_pwd());
@@ -48,6 +48,23 @@ public class UserDao {
 			e.printStackTrace();
 		}finally {
 			close(rs);
+			close(pstmt);
+		}
+		return result;
+	}
+	public int edit(int userNo, String pwd, String name, Connection conn) {
+		PreparedStatement pstmt = null;
+		int result = 0;
+		try {
+			String sql = "UPDATE `user` SET `user_pw` = ?, `user_name` = ? WHERE `user_no` = " + userNo;
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pwd);
+			pstmt.setString(2, name);
+			result = pstmt.executeUpdate();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}finally {
 			close(pstmt);
 		}
 		return result;
