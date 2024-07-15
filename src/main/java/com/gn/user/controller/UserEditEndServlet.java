@@ -28,7 +28,7 @@ public class UserEditEndServlet extends HttpServlet {
 		
 		if(session != null) {
 			User u = (User)session.getAttribute("user");
-			userNo = u.getUser_no();
+			userNo = u.getUser_no(); 
 		}
 		
 		String pwd = request.getParameter("user_pw");

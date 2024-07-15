@@ -14,6 +14,7 @@
 		<div id="section_wrap">
 			<div class="word">
 				<h3>게시글 등록 성공!!</h3>
+				
 			</div>
 		</div>
 	</section>

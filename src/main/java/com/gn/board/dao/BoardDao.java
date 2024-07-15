@@ -14,7 +14,7 @@ public class BoardDao {
 		PreparedStatement pstmt = null;
 		int result = 0;
 		try {
-			String sql = "INSERT INTO `board` (board_title,board_content,board_writer,ori_thumbnail,new_thumbnail) VALUES (?,?,?,?,?)";
+			String sql = "INSERT INTO `board`(board_title,board_content,board_writer,ori_thumbnail,new_thumbnail) VALUES (?,?,?,?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, b.getBoard_title());
 			pstmt.setString(2, b.getBoard_content());
@@ -22,26 +22,53 @@ public class BoardDao {
 			pstmt.setString(4, b.getOri_thumbnail());
 			pstmt.setString(5, b.getNew_thumbnail());
 			result = pstmt.executeUpdate();
-			
-		}catch (Exception e) {
+		}catch(Exception e) {
 			e.printStackTrace();
 		}finally {
 			close(pstmt);
 		}
 		return result;
 	}
-	public List<Board> selectBoardList(Board option, Connection conn){
+	
+	public int selectBoardCount(Board option,Connection conn) {
+		int result = 0;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
+		try {
+			String sql = "SELECT COUNT(*) AS cnt FROM board";
+			if(option.getBoard_title() != null) {
+				sql += " WHERE board_title LIKE CONCAT('%','"+option.getBoard_title()+"','%')";
+			}
+			
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				result = rs.getInt("cnt");
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			close(rs);
+			close(pstmt);
+		}
+		return result;
+	}
+	
+	
+	public List<Board> selectBoardList(Board option,Connection conn){
 		List<Board> list = new ArrayList<Board>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		try {
 			// 검색 조건
 			// X : SELECT * FROM board
-			// O : SELECT * FROM board WHERE board_title LIKE CONCAT ('%',board_title,'%')
+			// O : SELECT * FROM board WHERE board_title LIKE CONCAT('%',board_title,'%')
 			String sql = "SELECT * FROM board";
 			if(option.getBoard_title() != null) {
 				sql += " WHERE board_title LIKE CONCAT('%','"+option.getBoard_title()+"','%')";
 			}
+			sql += " LIMIT "+option.getLimitPageNo()+", "+option.getNumPerPage();
+			
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
@@ -55,7 +82,9 @@ public class BoardDao {
 						rs.getString("new_thumbnail"));
 				list.add(resultVo);
 			}
-		}catch (Exception e) {
+			
+			
+		}catch(Exception e) {
 			e.printStackTrace();
 		}finally {
 			close(rs);
